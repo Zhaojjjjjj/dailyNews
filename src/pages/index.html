@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>新闻联播文字稿</title>
+		<link rel="stylesheet" href="../assets/css/common.css" />
+		<link rel="stylesheet" href="../assets/css/home.css" />
+	</head>
+	<body>
+		<div id="header">
+			<div class="header-content">
+				<h1 class="site-title">《新闻联播》文字稿</h1>
+				<p class="site-subtitle">每日自动更新 · 权威新闻归档</p>
+			</div>
+			<nav class="nav-tabs">
+				<a href="index.html" class="nav-item active">首页</a>
+				<a href="archive.html" class="nav-item">完整归档</a>
+			</nav>
+		</div>
+		<div id="container">
+			<!-- 统计信息卡片 -->
+			<div class="stats-section">
+				<div class="stat-card">
+					<div class="stat-number" id="total-count">-</div>
+					<div class="stat-label">总计文字稿</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-number" id="latest-date">-</div>
+					<div class="stat-label">最新更新</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-number" id="total-news">-</div>
+					<div class="stat-label">累计新闻</div>
+				</div>
+			</div>
+
+			<!-- 最新内容 -->
+			<div class="content-section">
+				<h2 class="section-title">最新文字稿</h2>
+				<div id="latest-list" class="news-list">
+					<div class="loading">
+						<div class="spinner"></div>
+						<p>加载中...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="footer">
+			<p>&copy; 2022-2025 新闻联播文字稿归档 | 数据来源: CCTV</p>
+		</div>
+		<script type="module" src="../assets/js/home.js"></script>
+	</body>
+</html>

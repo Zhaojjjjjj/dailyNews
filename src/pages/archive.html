@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>完整归档 - 新闻联播文字稿</title>
+		<link rel="stylesheet" href="../assets/css/common.css" />
+		<link rel="stylesheet" href="../assets/css/archive.css" />
+	</head>
+	<body>
+		<div id="header">
+			<div class="header-content">
+				<h1 class="site-title">《新闻联播》文字稿</h1>
+				<p class="site-subtitle">完整归档 · 历史记录</p>
+			</div>
+			<nav class="nav-tabs">
+				<a href="index.html" class="nav-item">首页</a>
+				<a href="archive.html" class="nav-item active">完整归档</a>
+			</nav>
+		</div>
+		<div id="container">
+			<!-- 搜索栏 -->
+			<div class="search-section">
+				<div class="search-box">
+					<input type="text" id="search-input" class="search-input" placeholder="搜索日期或关键词..." />
+					<button class="search-btn" onclick="searchArchive()">搜索</button>
+				</div>
+			</div>
+
+			<!-- 归档列表 -->
+			<div class="archive-section">
+				<h2 class="section-title">全部文字稿 (<span id="total-count">0</span> 篇)</h2>
+				<div id="archive-list" class="archive-list">
+					<div class="loading">
+						<div class="spinner"></div>
+						<p>加载中...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="footer">
+			<p>&copy; 2022-2025 新闻联播文字稿归档 | 数据来源: CCTV</p>
+		</div>
+		<script type="module" src="../assets/js/archive.js"></script>
+	</body>
+</html>

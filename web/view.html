@@ -1,55 +1,563 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>{{date}} - 新闻联播文字稿查看</title>
-		<link rel="stylesheet" href="./github-markdown.min.css">
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{date}} - 新闻联播文字稿</title>
+		<link rel="stylesheet" href="./github-markdown.min.css" />
 		<script src="./showdown.min.js"></script>
 	</head>
 	<body>
-		<div id="view" class="markdown-body">加载中...</div>
+		<div id="header">
+			<div class="header-content">
+				<h1 class="site-title">《新闻联播》文字稿</h1>
+				<p class="site-subtitle" id="current-date">加载中...</p>
+			</div>
+			<nav class="nav-tabs">
+				<a href="../index.html" class="nav-item">首页</a>
+				<a href="archive.html" class="nav-item">完整归档</a>
+			</nav>
+		</div>
+		<div id="container">
+			<div class="toolbar">
+				<button class="tool-btn" onclick="window.history.back()">
+					<span>← 返回</span>
+				</button>
+				<button class="tool-btn" onclick="window.print()">
+					<span>🖨️ 打印</span>
+				</button>
+				<button class="tool-btn" id="share-btn" onclick="shareArticle()">
+					<span>🔗 分享</span>
+				</button>
+			</div>
+			<article id="view" class="markdown-body">
+				<div class="loading">
+					<div class="spinner"></div>
+					<p>加载中...</p>
+				</div>
+			</article>
+		</div>
+		<div id="footer">
+			<p>&copy; 2022-2025 新闻联播文字稿归档 | 数据来源: CCTV</p>
+		</div>
 		<style>
-			html, 
-			body, 
-			.markdown-body {
-				padding: 0;
-				border: none;
+			/* ========== 全局样式 ========== */
+			* {
 				margin: 0;
-				height: 100%;
-				width: 100%;
-				word-break: break-all;
+				padding: 0;
 				box-sizing: border-box;
 			}
+
+			html {
+				font-size: 16px;
+				scroll-behavior: smooth;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+				line-height: 1.6;
+				color: #333;
+				background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+
+			/* ========== 顶部导航栏 ========== */
+			#header {
+				background: linear-gradient(135deg, #c41e3a 0%, #8b1a2e 100%);
+				color: white;
+				box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
+				position: sticky;
+				top: 0;
+				z-index: 1000;
+				border-bottom: 3px solid #d4af37;
+			}
+
+			.header-content {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 1.5rem 2rem 1rem;
+				text-align: center;
+			}
+
+			.site-title {
+				font-size: 2rem;
+				font-weight: 700;
+				margin-bottom: 0.3rem;
+				text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+				letter-spacing: 2px;
+			}
+
+			.site-subtitle {
+				font-size: 0.95rem;
+				opacity: 0.95;
+				font-weight: 300;
+			}
+
+			/* 导航标签 */
+			.nav-tabs {
+				max-width: 1200px;
+				margin: 0 auto;
+				display: flex;
+				justify-content: center;
+				gap: 0;
+				padding: 0 2rem;
+			}
+
+			.nav-item {
+				padding: 0.8rem 2rem;
+				color: rgba(255, 255, 255, 0.8);
+				text-decoration: none;
+				border-bottom: 3px solid transparent;
+				transition: all 0.3s ease;
+				font-weight: 500;
+			}
+
+			.nav-item:hover {
+				color: white;
+				background: rgba(255, 255, 255, 0.1);
+			}
+
+			/* ========== 主容器 ========== */
+			#container {
+				flex: 1;
+				max-width: 900px;
+				width: 100%;
+				margin: 2rem auto;
+				padding: 0 1rem;
+			}
+
+			/* ========== 工具栏 ========== */
+			.toolbar {
+				display: flex;
+				gap: 1rem;
+				margin-bottom: 1.5rem;
+				justify-content: flex-end;
+			}
+
+			.tool-btn {
+				padding: 0.6rem 1.2rem;
+				background: white;
+				color: #c41e3a;
+				border: 1px solid #c41e3a;
+				border-radius: 4px;
+				font-size: 0.9rem;
+				font-weight: 500;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.tool-btn:hover {
+				background: #c41e3a;
+				color: white;
+				transform: translateY(-2px);
+				box-shadow: 0 4px 8px rgba(196, 30, 58, 0.2);
+			}
+
+			/* ========== Markdown 内容区域 ========== */
 			.markdown-body {
-				padding: 1.2em;
-				overflow: auto;
+				background: white;
+				padding: 3rem;
+				border-radius: 8px;
+				box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+				min-height: 500px;
+				line-height: 1.8;
+			}
+
+			/* 加载动画 */
+			.loading {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				min-height: 400px;
+				color: #666;
+			}
+
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 4px solid #f3f3f3;
+				border-top: 4px solid #c41e3a;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+				margin-bottom: 1rem;
+			}
+
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+
+			/* ========== Markdown 样式增强 ========== */
+			.markdown-body h1 {
+				color: #c41e3a;
+				border-bottom: 3px solid #c41e3a;
+				padding-bottom: 0.8rem;
+				margin-bottom: 2rem;
+				font-size: 2rem;
+				font-weight: 700;
+				line-height: 1.4;
+			}
+
+			.markdown-body h2 {
+				color: #2c3e50;
+				border-left: 4px solid #c41e3a;
+				padding-left: 1rem;
+				margin-top: 2.5rem;
+				margin-bottom: 1.5rem;
+				font-size: 1.5rem;
+				font-weight: 600;
+			}
+
+			.markdown-body h3 {
+				color: #34495e;
+				margin-top: 2rem;
+				margin-bottom: 1rem;
+				font-size: 1.2rem;
+				font-weight: 600;
+				padding-left: 0.5rem;
+				border-left: 3px solid #d4af37;
+			}
+
+			.markdown-body p {
+				margin-bottom: 1.2rem;
+				line-height: 2;
+				text-align: justify;
+				color: #333;
+				font-size: 1.05rem;
+			}
+
+			.markdown-body a {
+				color: #c41e3a;
+				text-decoration: none;
+				border-bottom: 1px solid transparent;
+				transition: all 0.3s ease;
+				font-weight: 500;
+			}
+
+			.markdown-body a:hover {
+				color: #8b1a2e;
+				border-bottom-color: #c41e3a;
+			}
+
+			/* 新闻摘要样式 */
+			.markdown-body h2:first-of-type + p {
+				background: linear-gradient(135deg, #fff5f5 0%, #fafafa 100%);
+				padding: 1.5rem;
+				border-radius: 6px;
+				border-left: 4px solid #c41e3a;
+				margin-bottom: 2rem;
+				font-size: 1rem;
+				line-height: 2;
+				color: #444;
+			}
+
+			/* 详细新闻标题 */
+			.markdown-body h3 {
+				background: linear-gradient(to right, #f8f9fa 0%, transparent 100%);
+				padding: 0.8rem 1rem;
+				margin-left: -1rem;
+				margin-right: -1rem;
+				border-left: 4px solid #d4af37;
+			}
+
+			/* 查看原文链接 */
+			.markdown-body a[href*="http"] {
+				display: inline-block;
+				padding: 0.5rem 1.2rem;
+				background: linear-gradient(135deg, #c41e3a 0%, #8b1a2e 100%);
+				color: white !important;
+				border-radius: 4px;
+				border: none;
+				font-size: 0.9rem;
+				transition: all 0.3s ease;
+				box-shadow: 0 2px 4px rgba(196, 30, 58, 0.2);
+				margin-top: 0.5rem;
+			}
+
+			.markdown-body a[href*="http"]:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 8px rgba(196, 30, 58, 0.3);
+			}
+
+			/* 时间戳样式 */
+			.markdown-body hr {
+				border: none;
+				border-top: 2px solid #f0f0f0;
+				margin: 3rem 0 2rem;
+			}
+
+			.markdown-body hr + p {
+				text-align: center;
+				color: #999;
+				font-size: 0.85rem;
+				font-style: italic;
+			}
+
+			/* ========== 底部样式 ========== */
+			#footer {
+				background: #2c3e50;
+				color: white;
+				text-align: center;
+				padding: 1.5rem;
+				margin-top: 3rem;
+				font-size: 0.9rem;
+			}
+
+			#footer p {
+				margin: 0;
+				opacity: 0.9;
+			}
+
+			/* ========== 响应式设计 ========== */
+			@media (max-width: 768px) {
+				html {
+					font-size: 14px;
+				}
+
+				.header-content {
+					padding: 1rem 1rem 0.8rem;
+				}
+
+				.site-title {
+					font-size: 1.5rem;
+					letter-spacing: 1px;
+				}
+
+				.site-subtitle {
+					font-size: 0.85rem;
+				}
+
+				.nav-tabs {
+					padding: 0 1rem;
+				}
+
+				.nav-item {
+					padding: 0.6rem 1.2rem;
+					font-size: 0.9rem;
+				}
+
+				#container {
+					margin: 1rem auto;
+					padding: 0 0.5rem;
+				}
+
+				.toolbar {
+					flex-wrap: wrap;
+					justify-content: center;
+				}
+
+				.tool-btn {
+					flex: 1;
+					min-width: 100px;
+					justify-content: center;
+				}
+
+				.markdown-body {
+					padding: 2rem 1.5rem;
+				}
+
+				.markdown-body h1 {
+					font-size: 1.6rem;
+				}
+
+				.markdown-body h2 {
+					font-size: 1.3rem;
+					margin-top: 2rem;
+				}
+
+				.markdown-body h3 {
+					font-size: 1.1rem;
+					margin-left: 0;
+					margin-right: 0;
+					padding-left: 0.8rem;
+				}
+
+				.markdown-body p {
+					font-size: 1rem;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.markdown-body {
+					padding: 1.5rem 1rem;
+					border-radius: 4px;
+				}
+
+				.toolbar {
+					gap: 0.5rem;
+				}
+
+				.tool-btn {
+					padding: 0.5rem 0.8rem;
+					font-size: 0.85rem;
+				}
+
+				.markdown-body h3 {
+					padding-left: 0.5rem;
+				}
+			}
+
+			/* ========== 打印样式 ========== */
+			@media print {
+				#header,
+				#footer,
+				.toolbar {
+					display: none;
+				}
+
+				body {
+					background: white;
+				}
+
+				.markdown-body {
+					box-shadow: none;
+					padding: 0;
+				}
+
+				.markdown-body a[href*="http"] {
+					background: none;
+					color: #c41e3a !important;
+					box-shadow: none;
+					padding: 0;
+				}
+
+				.markdown-body a[href*="http"]::after {
+					content: " (" attr(href) ")";
+					font-size: 0.8em;
+					color: #666;
+				}
+			}
+
+			/* ========== 滚动条美化 ========== */
+			::-webkit-scrollbar {
+				width: 10px;
+				height: 10px;
+			}
+
+			::-webkit-scrollbar-track {
+				background: #f1f1f1;
+			}
+
+			::-webkit-scrollbar-thumb {
+				background: #c41e3a;
+				border-radius: 5px;
+			}
+
+			::-webkit-scrollbar-thumb:hover {
+				background: #8b1a2e;
 			}
 		</style>
 		<script>
+			// 获取 URL 参数
 			function getQueryString(name) {
-				var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
-				var r = window.location.search.substr(1).match(reg);
+				const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+				const r = window.location.search.substr(1).match(reg);
 				if (r != null) return unescape(r[2]);
 				return null;
 			}
+
+			// 格式化日期: 20220929 -> 2022年09月29日
+			function formatDate(dateStr) {
+				if (!dateStr || dateStr.length !== 8) return dateStr;
+				return `${dateStr.substring(0, 4)}年${dateStr.substring(4, 6)}月${dateStr.substring(6, 8)}日`;
+			}
+
+			// 分享功能
+			function shareArticle() {
+				const url = window.location.href;
+				const title = document.title;
+				
+				if (navigator.share) {
+					// 使用 Web Share API (移动端)
+					navigator.share({
+						title: title,
+						url: url
+					}).catch(() => {
+						copyToClipboard(url);
+					});
+				} else {
+					// 复制链接到剪贴板
+					copyToClipboard(url);
+				}
+			}
+
+			function copyToClipboard(text) {
+				const textarea = document.createElement('textarea');
+				textarea.value = text;
+				textarea.style.position = 'fixed';
+				textarea.style.opacity = '0';
+				document.body.appendChild(textarea);
+				textarea.select();
+				
+				try {
+					document.execCommand('copy');
+					alert('链接已复制到剪贴板！');
+				} catch (err) {
+					alert('复制失败，请手动复制: ' + text);
+				}
+				
+				document.body.removeChild(textarea);
+			}
+
+			// 主逻辑
 			const date = getQueryString('date') || 'Error';
-			document.title = document.title.replace('{{date}}', date);
-			fetch(`/news/${date}.md`).then(response => {
-				if(response.status < 200 || response.status > 300) throw Error(response.statusText);
-				return response.text();
-			}).then(md => {
-				render(md);
-			}).catch(e => {
-				fetch(`./Error.md`).then(errResponse => {
-					return errResponse.text();
-				}).then(errMd => {
-					render(errMd);
+			const formattedDate = formatDate(date);
+			
+			// 更新标题和副标题
+			document.title = formattedDate + ' - 新闻联播文字稿';
+			document.getElementById('current-date').textContent = formattedDate;
+
+			// 加载文字稿
+			fetch(`/news/${date}.md`)
+				.then((response) => {
+					if (response.status < 200 || response.status > 300) {
+						throw Error(response.statusText);
+					}
+					return response.text();
+				})
+				.then((md) => {
+					render(md);
+				})
+				.catch((e) => {
+					console.error('加载失败:', e);
+					fetch(`./Error.md`)
+						.then((errResponse) => errResponse.text())
+						.then((errMd) => {
+							render(errMd);
+						})
+						.catch(() => {
+							document.getElementById('view').innerHTML = `
+								<div style="text-align:center;padding:3rem;color:#999;">
+									<h2 style="color:#c41e3a;margin-bottom:1rem;">加载失败</h2>
+									<p>无法加载该日期的文字稿，请检查日期是否正确或稍后重试。</p>
+									<a href="../index.html" style="display:inline-block;margin-top:2rem;padding:0.8rem 2rem;background:#c41e3a;color:white;text-decoration:none;border-radius:4px;">返回首页</a>
+								</div>
+							`;
+						});
 				});
-			});
+
 			function render(markdown) {
-				document.getElementById('view').innerHTML = new showdown.Converter().makeHtml(markdown);
+				const converter = new showdown.Converter({
+					tables: true,
+					strikethrough: true,
+					tasklists: true,
+					openLinksInNewWindow: true
+				});
+				document.getElementById('view').innerHTML = converter.makeHtml(markdown);
+				
+				// 添加平滑滚动到顶部
+				window.scrollTo({ top: 0, behavior: 'smooth' });
 			}
 		</script>
 	</body>

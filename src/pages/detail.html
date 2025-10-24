@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>新闻联播文字稿</title>
+		<link rel="stylesheet" href="../assets/lib/github-markdown.min.css" />
+		<link rel="stylesheet" href="../assets/css/common.css" />
+		<link rel="stylesheet" href="../assets/css/detail.css" />
+		<script src="../assets/lib/showdown.min.js"></script>
+	</head>
+	<body>
+		<div id="header">
+			<div class="header-content">
+				<h1 class="site-title">《新闻联播》文字稿</h1>
+				<p class="site-subtitle" id="current-date">加载中...</p>
+			</div>
+			<nav class="nav-tabs">
+				<a href="index.html" class="nav-item">首页</a>
+				<a href="archive.html" class="nav-item">完整归档</a>
+			</nav>
+		</div>
+		<div id="container">
+			<div class="toolbar">
+				<button class="tool-btn" onclick="window.history.back()">
+					<span>← 返回</span>
+				</button>
+				<button class="tool-btn" onclick="window.print()">
+					<span>🖨️ 打印</span>
+				</button>
+				<button class="tool-btn" id="share-btn" onclick="shareArticle()">
+					<span>🔗 分享</span>
+				</button>
+			</div>
+			<article id="view" class="markdown-body">
+				<div class="loading">
+					<div class="spinner"></div>
+					<p>加载中...</p>
+				</div>
+			</article>
+		</div>
+		<div id="footer">
+			<p>&copy; 2022-2025 新闻联播文字稿归档 | 数据来源: CCTV</p>
+		</div>
+		<script type="module" src="../assets/js/detail.js"></script>
+	</body>
+</html>
