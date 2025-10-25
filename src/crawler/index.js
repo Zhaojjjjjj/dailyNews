@@ -161,26 +161,47 @@ const updateCatalogue = async ({ catalogueJsonPath, readmeMdPath, date, abstract
 	await readFile(catalogueJsonPath).then(async data => {
 		data = data.toString();
 		let catalogueJson = JSON.parse(data || '[]');
+		
+		// 检查日期是否已存在
+		const exists = catalogueJson.some(item => item.date === date);
+		if (exists) {
+			console.log(`日期 ${date} 已存在于目录中,跳过添加`);
+			return;
+		}
+		
 		catalogueJson.unshift({
 			date,
 			abstract,
 		});
 		let textJson = JSON.stringify(catalogueJson);
 		await writeFile(catalogueJsonPath, textJson);
+		console.log('更新 catalogue.json 完成');
 	});
-	console.log('更新 catalogue.json 完成');
+	
 	// 更新 README.md
 	await readFile(readmeMdPath).then(async data => {
 		data = data.toString();
+		// 检查是否已存在该日期的链接
+		if (data.includes(`[${date}]`)) {
+			console.log(`README.md 中已存在 ${date},跳过添加`);
+			return;
+		}
 		let text = data.replace('<!-- INSERT -->', `<!-- INSERT -->\n- [${date}](./news/${date}.md)`)
 		await writeFile(readmeMdPath, text);
+		console.log('更新 README.md 完成');
 	});
-	console.log('更新 README.md 完成');
 }
 
 const newsList = await getNewsList(DATE);
 const abstract = await getAbstract(newsList.abstract);
 const news = await getNews(newsList.news);
+
+// 检查是否有新闻内容
+if (news.length === 0) {
+	console.log('今日暂无新闻内容,跳过保存');
+	process.exit(0);
+}
+
 const md = newsToMarkdown({
 	date: DATE,
 	abstract,

@@ -1,3 +1,8 @@
 node_modules
 serve.json
 
+# 忽略所有 md 文件(仅供本地查看)
+public/news/*.md
+
+# 但保留 catalogue.json
+!public/news/catalogue.json
