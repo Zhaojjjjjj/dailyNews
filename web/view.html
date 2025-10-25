@@ -519,7 +519,7 @@
 			document.getElementById('current-date').textContent = formattedDate;
 
 			// 加载文字稿
-			fetch(`/news/${date}.md`)
+			fetch(`../public/news/${date}.md`)
 				.then((response) => {
 					if (response.status < 200 || response.status > 300) {
 						throw Error(response.statusText);
