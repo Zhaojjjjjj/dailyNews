@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:migrate": "node scripts/migrate.js"
+    "db:migrate": "node scripts/migrate.js",
+    "import": "node scripts/import-old-data.js",
+    "batch-crawl": "node scripts/batch-crawl.js"
   },
   "dependencies": {
     "next": "^14.2.0",

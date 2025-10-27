@@ -12,10 +12,16 @@
 - 适合想立即看到效果的用户
 
 ### 🔧 我需要配置环境变量
-👉 阅读 [ENV_SETUP.md](./ENV_SETUP.md) ⭐ **推荐先看**
+👉 阅读 [VERCEL_ENV_FIX.md](./VERCEL_ENV_FIX.md) ⭐ **推荐先看**
 - 详细的环境变量配置指南
 - 如何从 Vercel 获取数据库连接
 - 常见配置问题解决
+
+### 📦 我需要恢复历史数据
+👉 阅读 [DATA_RECOVERY.md](./DATA_RECOVERY.md) ⭐ **推荐**
+- 从旧项目导入数据
+- 批量爬取历史新闻
+- 手动触发单次爬取
 
 ### 📖 我想了解完整功能
 👉 阅读 [README.md](./README.md)
