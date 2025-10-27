@@ -1,7 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import AnimatedBackground from './components/AnimatedBackground';
+import Logo from './components/Logo';
+import Pagination from './components/Pagination';
+import { staggerCards, animateNumber, animateTitle } from '@/lib/animations';
 
 interface NewsItem {
   id: number;
@@ -22,11 +26,21 @@ function formatDate(dateStr: string) {
   return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
+  const [allNews, setAllNews] = useState<NewsItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const newsListRef = useRef<HTMLDivElement>(null);
+  const statNumber1 = useRef<HTMLDivElement>(null);
+  const statNumber2 = useRef<HTMLDivElement>(null);
+  const statNumber3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,11 +52,11 @@ export default function Home() {
           setStats(statsData.data);
         }
 
-        // 获取最新 10 条新闻
-        const newsRes = await fetch('/api/news?limit=10');
+        // 获取最新 50 条新闻用于分页
+        const newsRes = await fetch('/api/news?limit=50');
         const newsData = await newsRes.json();
         if (newsData.success) {
-          setLatestNews(newsData.data);
+          setAllNews(newsData.data);
         }
 
         setLoading(false);
@@ -55,6 +69,54 @@ export default function Home() {
 
     fetchData();
   }, []);
+  
+  // 计算当前页显示的新闻
+  const totalPages = Math.ceil(allNews.length / ITEMS_PER_PAGE);
+  const currentNews = allNews.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  // 动画效果
+  useEffect(() => {
+    if (!loading && !error) {
+      // 标题动画
+      if (titleRef.current) {
+        animateTitle(titleRef.current);
+      }
+      
+      // 统计卡片动画
+      if (statsRef.current) {
+        const cards = statsRef.current.querySelectorAll('.stat-card');
+        staggerCards(cards);
+      }
+      
+      // 数字动画
+      if (stats) {
+        if (statNumber1.current) {
+          animateNumber(statNumber1.current, stats.totalCount);
+        }
+        if (statNumber3.current) {
+          animateNumber(statNumber3.current, stats.totalNews);
+        }
+      }
+    }
+  }, [loading, error, stats]);
+  
+  // 新闻列表动画（当页面改变时触发）
+  useEffect(() => {
+    if (!loading && !error && newsListRef.current) {
+      const items = newsListRef.current.querySelectorAll('.news-item');
+      setTimeout(() => {
+        staggerCards(items);
+      }, 100);
+    }
+  }, [loading, error, currentPage, currentNews]);
 
   if (loading) {
     return (
@@ -112,9 +174,11 @@ export default function Home() {
 
   return (
     <div>
+      <AnimatedBackground />
       <header className="header">
         <div className="header-content">
-          <h1 className="site-title">《新闻联播》文字稿</h1>
+          <Logo />
+          <h1 className="site-title" ref={titleRef}>《新闻联播》文字稿</h1>
           <p className="site-subtitle">每日自动更新 · 权威新闻归档</p>
         </div>
         <nav className="nav-tabs">
@@ -129,19 +193,19 @@ export default function Home() {
 
       <div className="container">
         {/* 统计信息卡片 */}
-        <div className="stats-section">
+        <div className="stats-section" ref={statsRef}>
           <div className="stat-card">
-            <div className="stat-number">{stats?.totalCount || 0}</div>
+            <div className="stat-number" ref={statNumber1}>0</div>
             <div className="stat-label">总计文字稿</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">
+            <div className="stat-number" ref={statNumber2}>
               {stats?.latestDate ? formatDate(stats.latestDate) : '-'}
             </div>
             <div className="stat-label">最新更新</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">{stats?.totalNews || 0}</div>
+            <div className="stat-number" ref={statNumber3}>0</div>
             <div className="stat-label">累计新闻</div>
           </div>
         </div>
@@ -149,8 +213,8 @@ export default function Home() {
         {/* 最新内容 */}
         <div className="content-section">
           <h2 className="section-title">最新文字稿</h2>
-          <div className="news-list">
-            {latestNews.map((item) => (
+          <div className="news-list" ref={newsListRef}>
+            {currentNews.map((item) => (
               <Link href={`/news/${item.date}`} key={item.id}>
                 <div className="news-item">
                   <div className="news-date">{formatDate(item.date)}</div>
@@ -160,6 +224,15 @@ export default function Home() {
               </Link>
             ))}
           </div>
+          
+          {/* 分页 */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
 

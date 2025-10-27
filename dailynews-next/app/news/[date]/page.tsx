@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { marked } from 'marked';
+import AnimatedBackground from '../../components/AnimatedBackground';
+import { fadeInPage, rippleEffect } from '@/lib/animations';
 
 interface NewsDetail {
   id: number;
@@ -27,6 +29,8 @@ export default function NewsDetail() {
   const [news, setNews] = useState<NewsDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +54,13 @@ export default function NewsDetail() {
       fetchData();
     }
   }, [date]);
+  
+  // 内容淡入动画
+  useEffect(() => {
+    if (!loading && !error && contentRef.current) {
+      fadeInPage(contentRef.current);
+    }
+  }, [loading, error, news]);
 
   const handlePrint = () => {
     window.print();
@@ -87,6 +98,11 @@ export default function NewsDetail() {
     } finally {
       document.body.removeChild(textarea);
     }
+  };
+  
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>, callback: () => void) => {
+    rippleEffect(e.currentTarget, e.clientX, e.clientY);
+    callback();
   };
 
   if (loading) {
@@ -127,17 +143,27 @@ export default function NewsDetail() {
 
   return (
     <div>
-      <div className="container">
+      <AnimatedBackground />
+      <div className="container" ref={contentRef}>
         {/* 工具栏 */}
         <div className="toolbar">
-          <button className="btn" onClick={() => router.back()}>
-            返回
+          <button 
+            className="btn" 
+            onClick={(e) => handleButtonClick(e, () => router.back())}
+          >
+            ← 返回
           </button>
-          <button className="btn btn-secondary" onClick={handlePrint}>
-            打印
+          <button 
+            className="btn btn-secondary" 
+            onClick={(e) => handleButtonClick(e, handlePrint)}
+          >
+            🖨️ 打印
           </button>
-          <button className="btn btn-secondary" onClick={handleShare}>
-            分享
+          <button 
+            className="btn btn-secondary" 
+            onClick={(e) => handleButtonClick(e, handleShare)}
+          >
+            📤 分享
           </button>
         </div>
 
