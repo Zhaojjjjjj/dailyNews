@@ -47,10 +47,13 @@ openssl rand -base64 32
 ### 步骤 5: 初始化数据库 (30 秒)
 
 ```bash
-# 拉取环境变量
+# 拉取环境变量到本地
 vercel env pull .env.local
 
-# 运行迁移
+# 确保已安装依赖
+npm install
+
+# 运行数据库迁移脚本
 npm run db:migrate
 ```
 

@@ -41,6 +41,10 @@ cp .env.example .env.local
 ### 3. 初始化数据库
 
 ```bash
+# 先安装依赖（包括 dotenv）
+npm install
+
+# 运行迁移脚本
 npm run db:migrate
 ```
 
@@ -214,16 +218,6 @@ curl https://your-domain.vercel.app/api/stats
 ```
 
 ## 🧪 测试
-
-### 测试爬虫功能
-
-```bash
-# 测试今天的爬虫
-node scripts/test-crawler.js
-
-# 测试指定日期
-node scripts/test-crawler.js 20241027
-```
 
 ### 测试 API
 

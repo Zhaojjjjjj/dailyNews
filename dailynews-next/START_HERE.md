@@ -11,6 +11,12 @@
 - 最快速的部署流程
 - 适合想立即看到效果的用户
 
+### 🔧 我需要配置环境变量
+👉 阅读 [ENV_SETUP.md](./ENV_SETUP.md) ⭐ **推荐先看**
+- 详细的环境变量配置指南
+- 如何从 Vercel 获取数据库连接
+- 常见配置问题解决
+
 ### 📖 我想了解完整功能
 👉 阅读 [README.md](./README.md)
 - 完整的功能介绍
@@ -22,6 +28,12 @@
 - 详细的部署步骤
 - Vercel 配置说明
 - 故障排查指南
+
+### 🆘 遇到问题了
+👉 阅读 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+- 常见错误解决方案
+- 调试技巧
+- 快速修复指南
 
 ### 📊 我想了解项目架构
 👉 阅读 [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)
