@@ -4,7 +4,7 @@
   "description": "新闻联播文字稿归档系统 - Next.js 版本",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run import && next build",
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "node scripts/migrate.js",
