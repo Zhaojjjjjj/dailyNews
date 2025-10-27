@@ -1,0 +1,6 @@
+# Vercel 部署时忽略的文件
+node_modules
+.next
+.env*.local
+*.log
+

@@ -1,0 +1,41 @@
+{
+  "name": "dailynews-next",
+  "version": "1.0.0",
+  "description": "新闻联播文字稿归档系统 - Next.js 版本",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "node --loader ts-node/esm scripts/migrate.js",
+    "test:crawler": "node --loader ts-node/esm scripts/test-crawler.js"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@vercel/postgres": "^0.8.0",
+    "jsdom": "^24.0.0",
+    "node-fetch": "^3.3.2",
+    "marked": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/jsdom": "^21.1.6",
+    "typescript": "^5.3.0",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.2.0",
+    "ts-node": "^10.9.2"
+  },
+  "keywords": [
+    "新闻联播",
+    "爬虫",
+    "新闻归档",
+    "Next.js",
+    "Vercel"
+  ],
+  "author": "",
+  "license": "ISC"
+}
