@@ -63,7 +63,7 @@ export default function Archive() {
         staggerCards(items);
       }, 100);
     }
-  }, [loading, error, currentPage, currentNews]);
+  }, [loading, error, currentPage, filteredNews]);
 
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
