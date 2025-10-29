@@ -143,10 +143,11 @@ curl -X POST https://your-domain.vercel.app/api/crawler \
 
 **GET /api/crawler**
 
-获取爬虫状态
+触发爬虫任务（Vercel Cron 使用此方法）
 
 ```bash
-curl https://your-domain.vercel.app/api/crawler
+curl https://your-domain.vercel.app/api/crawler \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
 ### 新闻列表 API

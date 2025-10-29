@@ -104,15 +104,32 @@ curl -X POST https://your-domain.vercel.app/api/crawler \
 #### 问题: 定时任务没有自动运行
 
 **检查清单**:
-- [ ] `vercel.json` 文件存在
-- [ ] Cron 配置正确
-- [ ] `CRON_SECRET` 环境变量已设置
-- [ ] 项目已部署到生产环境
+- [ ] `vercel.json` 文件存在且配置正确
+- [ ] Cron 路径为 `/api/crawler`
+- [ ] `CRON_SECRET` 环境变量已在 Vercel 中设置
+- [ ] 项目已部署到生产环境（Cron 仅在生产环境运行）
+- [ ] API 路由同时支持 GET 和 POST 方法
 
 **解决方案**:
-1. 检查 Vercel Dashboard → 项目 → Cron Jobs
-2. 查看执行日志
-3. 手动触发一次测试
+1. **检查 Vercel Dashboard**
+   - 进入项目 → Settings → Cron Jobs
+   - 确认 Cron 任务已启用
+   - 查看执行历史和日志
+
+2. **手动测试 GET 方法**（Vercel Cron 使用 GET）
+   ```bash
+   curl https://your-domain.vercel.app/api/crawler \
+     -H "Authorization: Bearer YOUR_CRON_SECRET"
+   ```
+
+3. **验证环境变量**
+   - 在 Vercel Dashboard → Settings → Environment Variables
+   - 确认 `CRON_SECRET` 已设置且应用到 Production 环境
+
+4. **查看执行日志**
+   ```bash
+   vercel logs --prod
+   ```
 
 ### 6. 本地开发问题
 
