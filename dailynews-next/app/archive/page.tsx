@@ -146,8 +146,6 @@ export default function Archive() {
 			<header className="header">
 				<div className="header-content">
 					<Logo />
-					<h1 className="site-title">《新闻联播》文字稿</h1>
-					<p className="site-subtitle">每日自动更新 · 权威新闻归档</p>
 				</div>
 				<nav className="nav-tabs">
 					<Link href="/" className="nav-item">
