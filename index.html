@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>新闻联播文字稿</title>
+		<title>Daily News</title>
 		<link rel="stylesheet" href="web/github-markdown.min.css" />
 		<script src="web/showdown.min.js"></script>
 	</head>
@@ -301,7 +301,6 @@
 				}
 			}
 
-
 			/* ========== 底部样式 ========== */
 			#footer {
 				background: #2c3e50;
@@ -443,35 +442,34 @@
 					renderHomePage(data);
 				})
 				.catch((error) => {
-					console.error('加载失败:', error);
-					document.getElementById('latest-list').innerHTML = 
-						'<div style="text-align:center;padding:2rem;color:#999;">加载失败,请刷新重试</div>';
+					console.error("加载失败:", error);
+					document.getElementById("latest-list").innerHTML = '<div style="text-align:center;padding:2rem;color:#999;">加载失败,请刷新重试</div>';
 				});
 
 			function renderHomePage(data) {
 				// 更新统计信息
 				const totalCount = data.length;
-				const latestDate = data[0]?.date || '-';
+				const latestDate = data[0]?.date || "-";
 				const totalNews = totalCount * 19; // 估算,每天约19条新闻
 
-				document.getElementById('total-count').textContent = totalCount;
-				document.getElementById('latest-date').textContent = formatDate(latestDate);
-				document.getElementById('total-news').textContent = totalNews + '+';
+				document.getElementById("total-count").textContent = totalCount;
+				document.getElementById("latest-date").textContent = formatDate(latestDate);
+				document.getElementById("total-news").textContent = totalNews + "+";
 
 				// 渲染最新10条
 				const latestNews = data.slice(0, 10);
-				const listContainer = document.getElementById('latest-list');
-				
+				const listContainer = document.getElementById("latest-list");
+
 				if (latestNews.length === 0) {
 					listContainer.innerHTML = '<div style="text-align:center;padding:2rem;color:#999;">暂无数据</div>';
 					return;
 				}
 
-				let html = '';
+				let html = "";
 				latestNews.forEach((item) => {
 					const date = item.date;
-					const abstract = item.abstract.replaceAll('\n', ' ').substring(0, 200) + '...';
-					
+					const abstract = item.abstract.replaceAll("\n", " ").substring(0, 200) + "...";
+
 					html += `
 						<div class="news-item">
 							<div class="news-date">${formatDate(date)}</div>
