@@ -5,7 +5,7 @@ import Link from 'next/link';
 import AnimatedBackground from '../components/AnimatedBackground';
 import Logo from '../components/Logo';
 import Pagination from '../components/Pagination';
-import { staggerCards, focusAnimation, blurAnimation } from '@/lib/animations';
+import { staggerCards } from '@/lib/animations';
 
 interface NewsItem {
   id: number;
@@ -176,8 +176,6 @@ export default function Archive() {
             placeholder="🔍 搜索关键词..."
             value={searchKeyword}
             onChange={(e) => handleSearch(e.target.value)}
-            onFocus={(e) => focusAnimation(e.currentTarget)}
-            onBlur={(e) => blurAnimation(e.currentTarget)}
           />
         </div>
 

@@ -1,121 +1,67 @@
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// 简化的动画系统 - 只保留必要、真实的动效
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-// 页面淡入动画
+// 简单的淡入 - 用于内容加载
 export const fadeInPage = (element: HTMLElement) => {
-  gsap.fromTo(
-    element,
-    { opacity: 0, y: 20 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
-  );
+  element.style.opacity = '0';
+  element.style.transform = 'translateY(8px)';
+  
+  requestAnimationFrame(() => {
+    element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    element.style.opacity = '1';
+    element.style.transform = 'translateY(0)';
+  });
 };
 
-// 卡片交错动画
+// 列表交错淡入 - 克制、自然
 export const staggerCards = (elements: NodeListOf<Element> | Element[]) => {
-  gsap.fromTo(
-    elements,
-    { opacity: 0, y: 30, scale: 0.95 },
-    {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'power3.out',
-    }
-  );
+  Array.from(elements).forEach((element, index) => {
+    const el = element as HTMLElement;
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(4px)';
+    
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, index * 40);
+  });
 };
 
-// 统计数字动画
+// 数字计数动画 - 保持这个，因为它实用
 export const animateNumber = (
   element: HTMLElement,
   finalValue: number,
-  duration: number = 2
+  duration: number = 1.5
 ) => {
-  const obj = { value: 0 };
-  gsap.to(obj, {
-    value: finalValue,
-    duration,
-    ease: 'power2.out',
-    onUpdate: () => {
-      element.textContent = Math.floor(obj.value).toLocaleString();
-    },
-  });
-};
-
-// 悬浮动画
-export const hoverScale = (element: HTMLElement) => {
-  const handleMouseEnter = () => {
-    gsap.to(element, {
-      scale: 1.03,
-      duration: 0.3,
-      ease: 'power2.out',
-    });
-  };
-
-  const handleMouseLeave = () => {
-    gsap.to(element, {
-      scale: 1,
-      duration: 0.3,
-      ease: 'power2.out',
-    });
-  };
-
-  element.addEventListener('mouseenter', handleMouseEnter);
-  element.addEventListener('mouseleave', handleMouseLeave);
-
-  return () => {
-    element.removeEventListener('mouseenter', handleMouseEnter);
-    element.removeEventListener('mouseleave', handleMouseLeave);
-  };
-};
-
-// 标题动画
-export const animateTitle = (element: HTMLElement) => {
-  const chars = element.textContent?.split('') || [];
-  element.innerHTML = chars
-    .map((char) => `<span class="char">${char}</span>`)
-    .join('');
-
-  gsap.fromTo(
-    element.querySelectorAll('.char'),
-    { opacity: 0, y: 20 },
-    {
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      stagger: 0.03,
-      ease: 'back.out(1.7)',
+  const start = 0;
+  const startTime = Date.now();
+  
+  const animate = () => {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / (duration * 1000), 1);
+    
+    // easeOut
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(start + (finalValue - start) * eased);
+    
+    element.textContent = current.toLocaleString();
+    
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      element.textContent = finalValue.toLocaleString();
     }
-  );
+  };
+  
+  animate();
 };
 
-// 滚动触发动画
-export const scrollReveal = (elements: NodeListOf<Element> | Element[]) => {
-  elements.forEach((element) => {
-    gsap.fromTo(
-      element,
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: element,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-  });
+// 标题动画 - 移除逐字动画，改为简单淡入
+export const animateTitle = (element: HTMLElement) => {
+  fadeInPage(element);
 };
 
-// 按钮波纹效果
+// 按钮波纹 - 简化为原生效果
 export const rippleEffect = (element: HTMLElement, x: number, y: number) => {
   const ripple = document.createElement('span');
   ripple.classList.add('ripple');
@@ -123,63 +69,19 @@ export const rippleEffect = (element: HTMLElement, x: number, y: number) => {
   ripple.style.left = `${x - rect.left}px`;
   ripple.style.top = `${y - rect.top}px`;
   element.appendChild(ripple);
-
-  gsap.fromTo(
-    ripple,
-    { scale: 0, opacity: 1 },
-    {
-      scale: 4,
-      opacity: 0,
-      duration: 0.6,
-      ease: 'power2.out',
-      onComplete: () => ripple.remove(),
-    }
-  );
+  
+  setTimeout(() => {
+    ripple.style.transform = 'scale(3)';
+    ripple.style.opacity = '0';
+  }, 0);
+  
+  setTimeout(() => ripple.remove(), 600);
 };
 
-// 页面转场动画
-export const pageTransition = (onComplete?: () => void) => {
-  const overlay = document.createElement('div');
-  overlay.className = 'page-transition';
-  document.body.appendChild(overlay);
-
-  const tl = gsap.timeline({
-    onComplete: () => {
-      overlay.remove();
-      onComplete?.();
-    },
-  });
-
-  tl.fromTo(
-    overlay,
-    { scaleX: 0 },
-    { scaleX: 1, duration: 0.4, ease: 'power2.in' }
-  ).to(overlay, { scaleX: 0, duration: 0.4, ease: 'power2.out' });
-};
-
-// 导航栏动画
-export const animateNav = (element: HTMLElement) => {
-  gsap.fromTo(
-    element,
-    { y: -100, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
-  );
-};
-
-// 搜索框聚焦动画
-export const focusAnimation = (element: HTMLElement) => {
-  gsap.to(element, {
-    scale: 1.02,
-    duration: 0.3,
-    ease: 'power2.out',
-  });
-};
-
-export const blurAnimation = (element: HTMLElement) => {
-  gsap.to(element, {
-    scale: 1,
-    duration: 0.3,
-    ease: 'power2.out',
-  });
-};
+// 移除了不必要的动画函数:
+// - focusAnimation/blurAnimation (CSS 就够了)
+// - hoverScale (CSS hover 更自然)
+// - scrollReveal (过度设计)
+// - pageTransition (不实用)
+// - animateNav (CSS transition 足够)
 

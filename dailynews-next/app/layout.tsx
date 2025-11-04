@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import ThemeToggle from './components/ThemeToggle';
 
 export const metadata: Metadata = {
   title: '新闻联播文字稿归档',
@@ -14,7 +15,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        {children}
+        <ThemeToggle />
+      </body>
     </html>
   );
 }
