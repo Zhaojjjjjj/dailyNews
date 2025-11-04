@@ -158,7 +158,7 @@ export function newsToMarkdown(
   for (let i = 0; i < newsLength; i++) {
     const { title, content } = news[i];
     const link = links[i];
-    mdNews += `### ${title}\n\n${content}\n\n[查看原文](${link})\n\n`;
+    mdNews += `### ${title}\n\n${content}\n\n<a href="${link}" target="_blank" rel="noopener noreferrer">查看原文 ↗</a>\n\n`;
   }
   
   const formattedDate = `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
