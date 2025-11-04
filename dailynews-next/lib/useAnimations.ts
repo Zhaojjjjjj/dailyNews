@@ -43,35 +43,6 @@ export const useNumberAnimation = (value: number) => {
   return ref;
 };
 
-// 滚动显示Hook
-export const useScrollReveal = (selector: string) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const elements = containerRef.current.querySelectorAll(selector);
-      if (elements.length > 0) {
-        animations.scrollReveal(elements);
-      }
-    }
-  }, [selector]);
-
-  return containerRef;
-};
-
-// 悬浮动画Hook
-export const useHoverScale = () => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      return animations.hoverScale(ref.current);
-    }
-  }, []);
-
-  return ref;
-};
-
 // 标题动画Hook
 export const useTitleAnimation = () => {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -84,4 +55,8 @@ export const useTitleAnimation = () => {
 
   return ref;
 };
+
+// 移除了以下 Hooks，因为对应的动画函数已删除：
+// - useScrollReveal (过度设计)
+// - useHoverScale (CSS hover 更自然)
 
