@@ -144,33 +144,63 @@ export default function NewsDetail() {
 	}
 
 	return (
-		<div>
+		<div className="page-wrapper detail-page">
 			<AnimatedBackground />
-			<div className="container" ref={contentRef}>
-				{/* 工具栏 */}
-				<div className="toolbar">
-					<button className="btn" onClick={(e) => handleButtonClick(e, () => router.back())}>
-						← 返回
+			
+			{/* 工具栏 */}
+			<div className="detail-toolbar">
+				<div className="toolbar-inner">
+					<button 
+						className="btn btn-back" 
+						onClick={(e) => handleButtonClick(e, () => router.back())}
+					>
+						<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+							<path d="M12 4L6 10l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+						</svg>
+						返回
 					</button>
-					<button className="btn btn-secondary" onClick={(e) => handleButtonClick(e, handlePrint)}>
-						打印
-					</button>
-					<button className="btn btn-secondary" onClick={(e) => handleButtonClick(e, handleShare)}>
-						分享
-					</button>
+					<div className="toolbar-actions">
+						<button 
+							className="btn btn-icon" 
+							onClick={(e) => handleButtonClick(e, handlePrint)}
+							title="打印"
+						>
+							<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+								<path d="M5 7V3h10v4M5 14H3a1 1 0 01-1-1V9a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1h-2M5 14v4h10v-4M5 14h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+							</svg>
+						</button>
+						<button 
+							className="btn btn-icon" 
+							onClick={(e) => handleButtonClick(e, handleShare)}
+							title="分享"
+						>
+							<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+								<path d="M4 12v5a1 1 0 001 1h10a1 1 0 001-1v-5M14 6l-4-4m0 0L6 6m4-4v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+							</svg>
+						</button>
+					</div>
 				</div>
-
-				{/* Markdown 内容 */}
-				<div
-					className="markdown-content"
-					dangerouslySetInnerHTML={{
-						__html: marked(news.content, { async: false }) as string,
-					}}
-				/>
 			</div>
 
+			{/* 主内容 */}
+			<main className="detail-content" ref={contentRef}>
+				<div className="container">
+					<article className="article-wrapper">
+						<div
+							className="markdown-content"
+							dangerouslySetInnerHTML={{
+								__html: marked(news.content, { async: false }) as string,
+							}}
+						/>
+					</article>
+				</div>
+			</main>
+
 			<footer className="footer">
-				<p>&copy; 2022-2025 新闻联播文字稿归档 | 数据来源: CCTV</p>
+				<div className="footer-content">
+					<p>&copy; 2022-{new Date().getFullYear()} 新闻联播文字稿归档</p>
+					<p className="footer-source">数据来源: CCTV</p>
+				</div>
 			</footer>
 		</div>
 	);

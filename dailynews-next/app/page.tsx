@@ -162,67 +162,98 @@ export default function Home() {
 	}
 
 	return (
-		<div>
+		<div className="page-wrapper">
 			<AnimatedBackground />
+			
+			{/* 导航栏 */}
 			<header className="header">
-				<div className="header-content">
-					<Logo />
+				<div className="header-inner">
+					<Logo showText={false} />
+					<nav className="nav-tabs">
+						<Link href="/" className="nav-item active">
+							首页
+						</Link>
+						<Link href="/archive" className="nav-item">
+							完整归档
+						</Link>
+					</nav>
 				</div>
-				<nav className="nav-tabs">
-					<Link href="/" className="nav-item active">
-						首页
-					</Link>
-					<Link href="/archive" className="nav-item">
-						完整归档
-					</Link>
-				</nav>
 			</header>
 
-			<div className="container">
-				{/* 统计信息卡片 */}
-				<div className="stats-section" ref={statsRef}>
-					<div className="stat-card">
-						<div className="stat-number" ref={statNumber1}>
-							0
+			{/* Hero 区域 */}
+			<section className="hero-section">
+				<div className="hero-content">
+					<h1 className="hero-title" ref={titleRef}>
+						新闻联播文字稿归档
+					</h1>
+					<p className="hero-subtitle">
+						每日更新 · 完整收录 · 便捷查阅
+					</p>
+					
+					{/* 统计信息 */}
+					<div className="hero-stats" ref={statsRef}>
+						<div className="hero-stat-item stat-card">
+							<div className="hero-stat-number" ref={statNumber1}>0</div>
+							<div className="hero-stat-label">文字稿</div>
 						</div>
-						<div className="stat-label">总计文字稿</div>
-					</div>
-					<div className="stat-card">
-						<div className="stat-number" ref={statNumber2}>
-							{stats?.latestDate ? formatDate(stats.latestDate) : "-"}
+						<div className="hero-stat-divider"></div>
+						<div className="hero-stat-item stat-card">
+							<div className="hero-stat-number" ref={statNumber3}>0</div>
+							<div className="hero-stat-label">条新闻</div>
 						</div>
-						<div className="stat-label">最新更新</div>
-					</div>
-					<div className="stat-card">
-						<div className="stat-number" ref={statNumber3}>
-							0
+						<div className="hero-stat-divider"></div>
+						<div className="hero-stat-item stat-card">
+							<div className="hero-stat-number" ref={statNumber2}>
+								{stats?.latestDate ? formatDate(stats.latestDate) : "-"}
+							</div>
+							<div className="hero-stat-label">最新更新</div>
 						</div>
-						<div className="stat-label">累计新闻</div>
 					</div>
 				</div>
+			</section>
 
-				{/* 最新内容 */}
-				<div className="content-section">
-					<h2 className="section-title">最新文字稿</h2>
-					<div className="news-list" ref={newsListRef}>
-						{currentNews.map((item) => (
+			{/* 主内容区 */}
+			<main className="main-content">
+				<div className="container">
+					<div className="content-header">
+						<h2 className="section-title">最新文字稿</h2>
+						<Link href="/archive" className="view-all-link">
+							查看全部 →
+						</Link>
+					</div>
+					
+					<div className="news-grid" ref={newsListRef}>
+						{currentNews.map((item, index) => (
 							<Link href={`/news/${item.date}`} key={item.id}>
-								<div className="news-item">
-									<div className="news-date">{formatDate(item.date)}</div>
-									<div className="news-abstract">{item.abstract}</div>
-									<div className="news-meta">共 {item.news_count} 条新闻</div>
-								</div>
+								<article className={`news-card news-item ${index === 0 ? 'featured' : ''}`}>
+									<div className="news-card-header">
+										<time className="news-date">{formatDate(item.date)}</time>
+										<span className="news-badge">{item.news_count} 条</span>
+									</div>
+									<p className="news-abstract">{item.abstract}</p>
+									<div className="news-card-footer">
+										<span className="read-more">阅读全文 →</span>
+									</div>
+								</article>
 							</Link>
 						))}
 					</div>
 
-					{/* 分页 */}
-					{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />}
+					{totalPages > 1 && (
+						<Pagination 
+							currentPage={currentPage} 
+							totalPages={totalPages} 
+							onPageChange={handlePageChange} 
+						/>
+					)}
 				</div>
-			</div>
+			</main>
 
 			<footer className="footer">
-				<p>&copy; 2022-{new Date().getFullYear()} 新闻联播文字稿归档 | 数据来源: CCTV</p>
+				<div className="footer-content">
+					<p>&copy; 2022-{new Date().getFullYear()} 新闻联播文字稿归档</p>
+					<p className="footer-source">数据来源: CCTV</p>
+				</div>
 			</footer>
 		</div>
 	);

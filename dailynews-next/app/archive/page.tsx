@@ -133,59 +133,104 @@ export default function Archive() {
 	}
 
 	return (
-		<div>
+		<div className="page-wrapper">
 			<AnimatedBackground />
+			
+			{/* 导航栏 */}
 			<header className="header">
-				<div className="header-content">
-					<Logo />
+				<div className="header-inner">
+					<Logo showText={false} />
+					<nav className="nav-tabs">
+						<Link href="/" className="nav-item">
+							首页
+						</Link>
+						<Link href="/archive" className="nav-item active">
+							完整归档
+						</Link>
+					</nav>
 				</div>
-				<nav className="nav-tabs">
-					<Link href="/" className="nav-item">
-						首页
-					</Link>
-					<Link href="/archive" className="nav-item active">
-						完整归档
-					</Link>
-				</nav>
 			</header>
 
-			<div className="container">
-				{/* 搜索栏 */}
-				<div className="search-bar">
-					<input ref={searchRef} type="text" className="search-input" placeholder="输入搜索关键词..." value={searchKeyword} onChange={(e) => handleSearch(e.target.value)} />
+			{/* 页面头部 */}
+			<section className="archive-header">
+				<div className="container">
+					<h1 className="archive-title">完整归档</h1>
+					<p className="archive-subtitle">共 {filteredNews.length} 条记录</p>
+					
+					{/* 搜索栏 */}
+					<div className="search-wrapper">
+						<svg className="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+							<path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM19 19l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+						</svg>
+						<input 
+							ref={searchRef} 
+							type="text" 
+							className="search-input" 
+							placeholder="搜索日期或关键词..." 
+							value={searchKeyword} 
+							onChange={(e) => handleSearch(e.target.value)} 
+						/>
+						{searchKeyword && (
+							<button 
+								className="search-clear"
+								onClick={() => handleSearch('')}
+								aria-label="清除搜索"
+							>
+								×
+							</button>
+						)}
+					</div>
 				</div>
+			</section>
 
-				{/* 完整归档列表 */}
-				<div className="content-section">
-					<h2 className="section-title">完整归档 ({filteredNews.length} 条记录)</h2>
-
+			{/* 主内容区 */}
+			<main className="main-content">
+				<div className="container">
 					{filteredNews.length === 0 ? (
-						<div className="error">
-							<p>没有找到匹配的结果</p>
+						<div className="empty-state">
+							<svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+								<circle cx="32" cy="32" r="30" stroke="currentColor" strokeWidth="2" opacity="0.2"/>
+								<path d="M32 20v24M20 32h24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.3"/>
+							</svg>
+							<h3>没有找到匹配的结果</h3>
+							<p>试试其他关键词</p>
 						</div>
 					) : (
 						<>
-							<div className="news-list" ref={newsListRef}>
+							<div className="news-grid" ref={newsListRef}>
 								{currentNews.map((item) => (
 									<Link href={`/news/${item.date}`} key={item.id}>
-										<div className="news-item">
-											<div className="news-date">{formatDate(item.date)}</div>
-											<div className="news-abstract">{item.abstract}</div>
-											<div className="news-meta">共 {item.news_count} 条新闻</div>
-										</div>
+										<article className="news-card news-item">
+											<div className="news-card-header">
+												<time className="news-date">{formatDate(item.date)}</time>
+												<span className="news-badge">{item.news_count} 条</span>
+											</div>
+											<p className="news-abstract">{item.abstract}</p>
+											<div className="news-card-footer">
+												<span className="read-more">阅读全文 →</span>
+											</div>
+										</article>
 									</Link>
 								))}
 							</div>
 
-							{/* 分页 */}
-							{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />}
+							{totalPages > 1 && (
+								<Pagination 
+									currentPage={currentPage} 
+									totalPages={totalPages} 
+									onPageChange={handlePageChange} 
+								/>
+							)}
 						</>
 					)}
 				</div>
-			</div>
+			</main>
 
 			<footer className="footer">
-				<p>&copy; 2022-2025 新闻联播文字稿归档 | 数据来源: CCTV</p>
+				<div className="footer-content">
+					<p>&copy; 2022-{new Date().getFullYear()} 新闻联播文字稿归档</p>
+					<p className="footer-source">数据来源: CCTV</p>
+				</div>
 			</footer>
 		</div>
 	);
