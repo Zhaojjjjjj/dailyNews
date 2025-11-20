@@ -75,6 +75,42 @@ export async function getAllNewsList() {
 }
 
 /**
+ * 分页获取新闻列表
+ */
+export async function getNewsByPage(page: number = 1, pageSize: number = 12) {
+	try {
+		const offset = (page - 1) * pageSize;
+		const result = await sql`
+      SELECT id, date, abstract, news_count, created_at
+      FROM news_articles
+      ORDER BY date DESC
+      LIMIT ${pageSize}
+      OFFSET ${offset};
+    `;
+		return result.rows;
+	} catch (error) {
+		console.error("分页获取新闻失败:", error);
+		throw error;
+	}
+}
+
+/**
+ * 获取新闻总数
+ */
+export async function getNewsCount() {
+	try {
+		const result = await sql`
+      SELECT COUNT(*) as total
+      FROM news_articles;
+    `;
+		return parseInt(result.rows[0].total, 10);
+	} catch (error) {
+		console.error("获取新闻总数失败:", error);
+		throw error;
+	}
+}
+
+/**
  * 获取最新 N 条新闻
  */
 export async function getLatestNews(limit: number = 10) {
@@ -115,14 +151,27 @@ export async function getNewsByDate(date: string) {
  */
 export async function getStatistics() {
 	try {
-		const result = await sql`
+		// 获取总数和总新闻数
+		const countResult = await sql`
       SELECT 
         COUNT(*) as total_count,
-        MAX(date) as latest_date,
         SUM(news_count) as total_news
       FROM news_articles;
     `;
-		return result.rows[0];
+		
+		// 获取最新日期（按日期降序排序后取第一条）
+		const latestResult = await sql`
+      SELECT date as latest_date
+      FROM news_articles
+      ORDER BY date DESC
+      LIMIT 1;
+    `;
+		
+		return {
+			total_count: countResult.rows[0].total_count,
+			total_news: countResult.rows[0].total_news,
+			latest_date: latestResult.rows[0]?.latest_date || ''
+		};
 	} catch (error) {
 		console.error("获取统计信息失败:", error);
 		throw error;

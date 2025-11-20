@@ -26,12 +26,13 @@ function formatDate(dateStr: string) {
 	return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 12;
 
 export default function Home() {
 	const [stats, setStats] = useState<Stats | null>(null);
-	const [allNews, setAllNews] = useState<NewsItem[]>([]);
+	const [news, setNews] = useState<NewsItem[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
@@ -42,37 +43,44 @@ export default function Home() {
 	const statNumber2 = useRef<HTMLDivElement>(null);
 	const statNumber3 = useRef<HTMLDivElement>(null);
 
+	// 获取统计信息
 	useEffect(() => {
-		const fetchData = async () => {
+		const fetchStats = async () => {
 			try {
-				// 获取统计信息
 				const statsRes = await fetch("/api/stats");
 				const statsData = await statsRes.json();
 				if (statsData.success) {
 					setStats(statsData.data);
 				}
+			} catch (err) {
+				console.error("加载统计信息失败:", err);
+			}
+		};
+		fetchStats();
+	}, []);
 
-				// 获取最新 50 条新闻用于分页
-				const newsRes = await fetch("/api/news?limit=50");
+	// 根据页码获取新闻数据
+	useEffect(() => {
+		const fetchNews = async () => {
+			setLoading(true);
+			try {
+				const newsRes = await fetch(`/api/news?page=${currentPage}&pageSize=${ITEMS_PER_PAGE}`);
 				const newsData = await newsRes.json();
 				if (newsData.success) {
-					setAllNews(newsData.data);
+					setNews(newsData.data);
+					setTotalPages(newsData.pagination.totalPages);
 				}
-
 				setLoading(false);
 			} catch (err) {
-				console.error("加载数据失败:", err);
-				setError("加载数据失败，请稍后重试");
+				console.error("加载新闻失败:", err);
+				setError("加载新闻失败，请稍后重试");
 				setLoading(false);
 			}
 		};
+		fetchNews();
+	}, [currentPage]);
 
-		fetchData();
-	}, []);
-
-	// 计算当前页显示的新闻
-	const totalPages = Math.ceil(allNews.length / ITEMS_PER_PAGE);
-	const currentNews = allNews.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+	// 页面切换处理
 
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page);
@@ -113,7 +121,7 @@ export default function Home() {
 				staggerCards(items);
 			}, 100);
 		}
-	}, [loading, error, currentPage, currentNews]);
+	}, [loading, error, currentPage]);
 
 	if (loading) {
 		return (
@@ -223,7 +231,7 @@ export default function Home() {
 					</div>
 					
 					<div className="news-grid" ref={newsListRef}>
-						{currentNews.map((item, index) => (
+						{news.map((item, index) => (
 							<Link href={`/news/${item.date}`} key={item.id}>
 								<article className={`news-card news-item ${index === 0 ? 'featured' : ''}`}>
 									<div className="news-card-header">

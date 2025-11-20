@@ -24,35 +24,42 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
-    const showPages = 5;
+    const maxVisible = 7;
     
-    if (totalPages <= showPages + 2) {
+    if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
-    } else {
-      pages.push(1);
-      
-      if (currentPage <= 3) {
-        for (let i = 2; i <= showPages; i++) {
-          pages.push(i);
-        }
-        pages.push('...');
-      } else if (currentPage >= totalPages - 2) {
-        pages.push('...');
-        for (let i = totalPages - showPages + 1; i <= totalPages - 1; i++) {
-          pages.push(i);
-        }
-      } else {
-        pages.push('...');
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i);
-        }
-        pages.push('...');
-      }
-      
-      pages.push(totalPages);
+      return pages;
     }
+    
+    pages.push(1);
+    
+    let startPage = Math.max(2, currentPage - 2);
+    let endPage = Math.min(totalPages - 1, currentPage + 2);
+    
+    const rangeSize = endPage - startPage + 1;
+    if (rangeSize < 5) {
+      if (currentPage < totalPages / 2) {
+        endPage = Math.min(totalPages - 1, startPage + 4);
+      } else {
+        startPage = Math.max(2, endPage - 4);
+      }
+    }
+    
+    if (startPage > 2) {
+      pages.push('...');
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    if (endPage < totalPages - 1) {
+      pages.push('...');
+    }
+    
+    pages.push(totalPages);
     
     return pages;
   };
